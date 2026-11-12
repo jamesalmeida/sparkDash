@@ -6,6 +6,7 @@ import type { AlertChannel, AlertChannelType, AlertEvent, AlertInstance, AlertRu
 import { useFocusTrap } from "../hooks/useFocusTrap";
 import { useModalPresence } from "../hooks/useModalPresence";
 import { formatSince } from "../shared/formatSince";
+import { formatDateTime } from "../shared/timeFormat";
 import { PlusIcon, XIcon } from "./ui/icons";
 import { SettingRow, ToggleRow } from "./SettingRows";
 import "../styles/dialogs.css";
@@ -382,7 +383,7 @@ export function AlertsDialog({ open, onClose, onSettingsSaved }: AlertsDialogPro
                             </span>
                           )}
                           {!test?.message && ch.status?.lastError && (
-                            <span className="field-hint is-warn" title={ch.status.lastErrorAt ? new Date(ch.status.lastErrorAt).toLocaleString() : undefined}>
+                            <span className="field-hint is-warn" title={ch.status.lastErrorAt ? formatDateTime(ch.status.lastErrorAt) : undefined}>
                               {t("alerts.lastSendFailed")}: {ch.status.lastError}
                             </span>
                           )}

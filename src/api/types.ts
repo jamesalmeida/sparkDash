@@ -1264,6 +1264,8 @@ export interface Settings {
   benchShareImage: boolean;
   /** IANA time zone for the Tokens, Energy and Activity charts; "" follows the browser. */
   timeZone?: string;
+  /** 12-hour clock ("9:04 PM"). Off (default) keeps 24-hour times. */
+  hour12?: boolean;
   /** Electricity price per kWh for cost estimates on the energy page; null = not set. */
   energyPricePerKwh: number | null;
   /** Currency symbol shown with cost estimates. */

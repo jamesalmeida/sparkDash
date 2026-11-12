@@ -46,6 +46,12 @@ const DEFAULTS = Object.freeze({
    * labels). "" follows each browser; otherwise an IANA name such as "Europe/Paris".
    */
   timeZone: "",
+  /**
+   * 12-hour clock ("9:04 PM") for every time the dashboard renders. Off by
+   * default, which keeps the 24-hour clock. The browser reads this; the server
+   * does not format clocks.
+   */
+  hour12: false,
   /** Electricity price per kWh, used to show estimated cost on the Fleet energy page. null = hide cost. */
   energyPricePerKwh: null,
   /** Currency symbol shown next to the estimated cost. */
@@ -265,6 +271,8 @@ function _clampSettings(settings) {
       ? s.energyCurrency.trim()
       : DEFAULTS.energyCurrency;
   s.timeZone = isValidTimeZone(s.timeZone) ? String(s.timeZone).trim() : "";
+  // Only a real `true` turns on 12-hour time; anything else stays 24-hour.
+  s.hour12 = s.hour12 === true;
   s.showVramBreakdown = Boolean(s.showVramBreakdown);
   s.prometheusExport = Boolean(s.prometheusExport);
   // Only a real `true` turns it on: a string like "false" must not count as enabled.

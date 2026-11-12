@@ -1,4 +1,5 @@
 import type { ActivityEvent } from "../../api/types";
+import { formatClock as formatClockTime, formatStamp as formatStampTime } from "../../shared/timeFormat";
 import { configuredTimeZone } from "../../shared/timeZone";
 
 /** Pure logic for the Activity page: categories, labels, filtering, counts, day grouping, export. */
@@ -261,16 +262,14 @@ export function dayLabel(key: string, now: number = Date.now(), tz?: string, cop
   return formatDayKey(key, sameYear ? { weekday: "long", month: "short", day: "numeric" } : { weekday: "long", month: "short", day: "numeric", year: "numeric" }, locale);
 }
 
-/** "14:05" 24-hour local time. */
+/** "14:05", or "2:05 PM" when Settings → 12-hour time is on. */
 export function formatClock(ts: number, tz?: string): string {
-  return dtf("clock", tz, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(ts));
+  return formatClockTime(ts, { timeZone: tz ?? configuredTimeZone() ?? undefined, locale: "en-US" });
 }
 
-/** "2026-10-07 14:05:09" in `tz`. */
+/** "2026-10-07 14:05:09" in `tz`, or with a 12-hour clock when that setting is on. */
 export function formatStamp(ts: number, tz?: string): string {
-  const parts = dtf("stamp", tz, { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }).formatToParts(new Date(ts));
-  const g = (t: string) => parts.find((p) => p.type === t)?.value ?? "00";
-  return `${g("year")}-${g("month")}-${g("day")} ${g("hour")}:${g("minute")}:${g("second")}`;
+  return formatStampTime(ts, { timeZone: tz ?? configuredTimeZone() ?? undefined, locale: "en-US" });
 }
 
 export interface DayGroup {

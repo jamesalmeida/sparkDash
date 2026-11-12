@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { setHour12 } from "../../shared/timeFormat";
 import { setConfiguredTimeZone } from "../../shared/timeZone";
 import type { ActivityEvent } from "../../api/types";
 import {
@@ -165,6 +166,15 @@ describe("local days", () => {
     expect(formatClock(NOW, NY)).toBe("11:00");
     expect(formatClock(Date.UTC(2026, 9, 7, 4, 5), NY)).toBe("00:05");
     expect(formatStamp(NOW, TOKYO)).toBe("2026-10-08 00:00:00");
+  });
+  it("formats clock and stamp in 12 h when Settings asks for it", () => {
+    setHour12(true);
+    try {
+      expect(formatClock(Date.UTC(2026, 0, 1, 21, 4), "UTC")).toBe("9:04 PM");
+      expect(formatStamp(Date.UTC(2026, 0, 1, 21, 4, 9), "UTC")).toBe("2026-01-01 9:04:09 PM");
+    } finally {
+      setHour12(false);
+    }
   });
   it("groups by local day in first-seen order", () => {
     const events = [

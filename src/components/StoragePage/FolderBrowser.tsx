@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useId, useMemo, useRef, useState, type RefObject } from "react";
 import type { StorageEntry } from "../../api/types";
 import { formatBytes } from "../../shared/formatBytes";
+import { formatDateTime } from "../../shared/timeFormat";
 import { formatSince } from "../../shared/formatSince";
 import { isStale, relativeTime, usableSeconds } from "../../shared/relativeTime";
 import { ChevronRightIcon, FileIcon, FolderIcon, LinkIcon, LockIcon, RotateIcon, SearchIcon, TrashIcon, XIcon } from "../ui/icons";
@@ -181,10 +182,10 @@ function ChangedCell({ entry, now, dated }: { entry: StorageEntry; now: number; 
   }
   const when = new Date(t * 1000);
   return (
-    <time className={`st-row__date${isStale(t, now) ? " is-old" : ""}`} dateTime={when.toISOString()} title={`Last changed ${when.toLocaleString()}`}>
+    <time className={`st-row__date${isStale(t, now) ? " is-old" : ""}`} dateTime={when.toISOString()} title={`Last changed ${formatDateTime(when)}`}>
       <span aria-hidden>{words}</span>
       <span className="sr-only">
-        Last changed {words}, {when.toLocaleString(undefined, { dateStyle: "full", timeStyle: "short" })}
+        Last changed {words}, {formatDateTime(when, { dateStyle: "full", timeStyle: "short" })}
       </span>
     </time>
   );
@@ -300,7 +301,7 @@ function AnalysedNote({ at, now, elevated }: { at: number | null; now: () => num
   const age = formatSince(at, now());
   const old = now() - at > 24 * 3_600_000;
   return (
-    <span className={`st-analysed${old ? " is-old" : ""}`} title={`${new Date(at).toLocaleString()}${old ? ". Sizes may have changed since: analyse again to refresh." : ""}`}>
+    <span className={`st-analysed${old ? " is-old" : ""}`} title={`${formatDateTime(at)}${old ? ". Sizes may have changed since: analyse again to refresh." : ""}`}>
       Last analysed {age === "0s" ? "just now" : `${age} ago`}
       {elevated ? " · including protected folders" : ""}
     </span>

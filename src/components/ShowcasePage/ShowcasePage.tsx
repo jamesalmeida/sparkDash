@@ -6,6 +6,7 @@ import {
   cancelShowcase,
   cancelShowcaseBeacon,
   clearShowcaseHistory,
+  fetchSettings,
   fetchSparkMetrics,
   fetchSparks,
   getShowcase,
@@ -18,6 +19,8 @@ import type {
   SparkConfig,
 } from "../../api/types";
 import { isLlmMonitoringEnabled } from "../../api/sparkRole";
+import { formatDateTime, publishHour12, useHour12 } from "../../shared/timeFormat";
+import { setConfiguredTimeZone } from "../../shared/timeZone";
 import { BoltIcon } from "../ui/icons";
 import { ThemeSwitch } from "../ThemeSwitch";
 import { TerminalCard } from "./TerminalCard";
@@ -192,6 +195,7 @@ async function copyText(text: string): Promise<boolean> {
 
 export function ShowcasePage({ sparkId, embedded = false }: ShowcasePageProps) {
   const { t, i18n } = useTranslation("showcase");
+  useHour12();
   const { promptType: promptTypeText, error: showcaseError, status: showcaseStatus } = useShowcaseText();
   const [spark, setSpark] = useState<SparkConfig | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -220,6 +224,25 @@ export function ShowcasePage({ sparkId, embedded = false }: ShowcasePageProps) {
   const [history, setHistory] = useState<ShowcaseHistorySummary[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [viewingHistory, setViewingHistory] = useState(false);
+
+  useEffect(() => {
+    // The dashboard already loaded settings for an embedded page. A direct /showcase
+    // visit has to read them itself so the run times follow 12-hour time.
+    if (embedded) return;
+    let cancelled = false;
+    fetchSettings()
+      .then((s) => {
+        if (cancelled) return;
+        setConfiguredTimeZone(s.timeZone);
+        publishHour12(s.hour12);
+      })
+      .catch(() => {
+        /* keep the clock the dashboard already published */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [embedded]);
 
   const revRef = useRef<number | null>(null);
   const sessionIdRef = useRef<string | null>(null);
@@ -1066,7 +1089,7 @@ export function ShowcasePage({ sparkId, embedded = false }: ShowcasePageProps) {
               <ul className="showcase-history__list">
                 {history.map((row) => {
                   const when = row.startedAt
-                    ? new Date(row.startedAt).toLocaleString(undefined, {
+                    ? formatDateTime(row.startedAt, {
                         month: "short",
                         day: "numeric",
                         hour: "2-digit",

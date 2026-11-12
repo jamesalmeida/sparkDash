@@ -7,6 +7,7 @@
   "temperature": { "title": "温度单位", "aria": "温度单位" },
   "healthTemps": { "title": "GPU 温度告警", "help": "最热的 GPU 达到第一个值时发出警告，达到第二个值时转为严重，单位始终为 °C，与显示单位无关。告警通知使用相同的阈值。默认值为 85 和 90；警告温度必须低于严重温度。", "warn": "警告温度 (°C)", "reset": "恢复默认值", "critical": "严重温度 (°C)" },
   "timeZone": { "title": "时区", "help": "Tokens、Energy 和 Activity 图表中的小时和日期边界及标签。留空时跟随此浏览器（{{timeZone}}）。每日 Token 桶和每月能源总量保持 UTC。", "placeholder": "浏览器默认值", "inputTitle": "留空时跟随此浏览器（{{timeZone}}）", "useBrowser": "使用浏览器设置", "unknown": "未知时区。请尝试 Europe/Paris。" },
+  "timeFormat": { "title": "12 小时制", "help": "时钟显示为 9:04 PM 这种形式。关闭时保持 21:04 这样的 24 小时制。活动记录、图表、基准测试和其他时钟都遵循此设置。" },
   "defaultLlmPort": { "title": "默认 LLM 端口", "help": "添加新 Spark 时预填（1–65535）。" },
   "toggles": {
     "hideOffline": { "title": "隐藏离线 Spark", "help": "在 Overview 中自动隐藏离线 Spark。" },

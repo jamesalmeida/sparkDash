@@ -114,6 +114,15 @@ test("a credentialed broker URL already in settings.json is scrubbed on load", (
   assert.equal(JSON.parse(onDisk).mqttUrl, "");
 });
 
+test("hour12 is off by default and only a real true turns it on", () => {
+  fs.writeFileSync(process.env.SETTINGS_JSON_PATH, JSON.stringify({ density: "compact" }));
+  assert.equal(loadSettings().hour12, false);
+  assert.equal(updateSettings({ hour12: true }).hour12, true);
+  assert.equal(updateSettings({ hour12: false }).hour12, false);
+  assert.equal(updateSettings({ hour12: "yes" }).hour12, false);
+  assert.equal(updateSettings({ hour12: 1 }).hour12, false);
+});
+
 test("timeZone follows the browser by default, accepts IANA names and drops anything else", () => {
   fs.writeFileSync(process.env.SETTINGS_JSON_PATH, JSON.stringify({ density: "compact" }));
   assert.equal(loadSettings().timeZone, "");

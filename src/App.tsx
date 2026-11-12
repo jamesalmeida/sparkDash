@@ -1,4 +1,5 @@
 import { BenchIcon } from "./components/bench/BenchIcon";
+import { setHour12 } from "./shared/timeFormat";
 import { setConfiguredTimeZone } from "./shared/timeZone";
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -293,10 +294,12 @@ function DashboardApp() {
   const onPage = isPageId(activeId);
   const benchType = benchTypeOf(activeId);
   const hideWorkers = settings?.hideWorkers ?? false;
-  // Charts read the time zone from a module value; set it before the pages render, and
-  // re-key <main> below so a change in Settings redraws them.
+  // Charts read the time zone and the 12-hour clock from module values; set them before
+  // the pages render, and re-key <main> below so a change in Settings redraws them.
   const chartTimeZone = settings?.timeZone ?? "";
+  const hour12 = settings?.hour12 === true;
   setConfiguredTimeZone(chartTimeZone);
+  setHour12(hour12);
   const hiddenWorkerIds = useMemo(() => {
     if (!hideWorkers) return new Set<string>();
     return new Set(
@@ -336,6 +339,7 @@ function DashboardApp() {
     const load = (afterTokenChange: boolean) =>
       fetchSettings()
         .then((s) => {
+          setHour12(s.hour12);
           setSettings(s);
           if (afterTokenChange) setActionError(null);
         })
@@ -362,6 +366,7 @@ function DashboardApp() {
   }, []);
 
   const handleSettingsSaved = useCallback((s: Settings) => {
+    setHour12(s.hour12);
     setSettings(s);
   }, []);
 
@@ -598,7 +603,7 @@ function DashboardApp() {
               stale={telemetryStale}
             />
             <ErrorBanner message={actionErrorMessage} onDismiss={() => setActionError(null)} />
-            <main key={chartTimeZone} className={telemetryStale || !connected ? "telemetry-stale" : undefined}>
+            <main key={`${chartTimeZone}\0${hour12 ? "12" : "24"}`} className={telemetryStale || !connected ? "telemetry-stale" : undefined}>
               {activeId === TOKENS_ID ? (
                 <TokensPage sparks={displaySparks} onSelectSpark={navigate} />
               ) : activeId === COST_ID ? (

@@ -1,4 +1,5 @@
 /** Small formatting helpers for the Tool Eval pages (pure, unit-tested). */
+import { formatDateTime } from "../../../shared/timeFormat";
 import { message, type ToolEvalPresentation } from "./presentation";
 
 /** 75 -> "1m 15s", 3700 -> "1h 01m". */
@@ -27,7 +28,7 @@ export function fmtNum(v: unknown, digits = 2): string {
 
 export function fmtDate(ms: number | null | undefined): string {
   if (!ms) return "–";
-  return new Date(ms).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  return formatDateTime(ms, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
 export function fmtBytes(n: number): string {

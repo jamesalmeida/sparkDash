@@ -8,6 +8,7 @@
  * computed = prompt - cached - unreported. total = generated + prompt.
  */
 import { addTokens, formatTokensCompact } from "../../shared/tokenFormat";
+import { formatHourMinute } from "../../shared/timeFormat";
 import { tzOffsetMinutes } from "../../shared/timeZone";
 import type { TokenHistory, TokenHistoryRow } from "../../api/types";
 import type { LlmTokenSeriesTotals } from "../../api/llmTokenTypes";
@@ -157,7 +158,7 @@ function tzOffset(ms: number, offsetMin?: number): number {
 }
 
 /**
- * Short x-axis label. Days are UTC dates ("7 Oct"); hours are LOCAL clock hours ("14:00").
+ * Short x-axis label. Days are UTC dates ("7 Oct"); hours are LOCAL clock hours ("14:00", or "2:00 PM").
  * `offsetMin` (minutes east of UTC) overrides the browser's zone — used by tests.
  */
 export function bucketLabel(key: string, unit: BucketUnit, offsetMin?: number, locale?: string): string {
@@ -168,10 +169,10 @@ export function bucketLabel(key: string, unit: BucketUnit, offsetMin?: number, l
     return locale?.startsWith("zh") ? `${d.getUTCMonth() + 1}月${d.getUTCDate()}日` : `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]}`;
   }
   const d = new Date(ms + tzOffset(ms, offsetMin) * 60_000);
-  return `${String(d.getUTCHours()).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}`;
+  return formatHourMinute(d.getUTCHours(), d.getUTCMinutes(), locale);
 }
 
-/** Tooltip heading: "Wed 7 Oct 2026 (UTC)" or "Wed 7 Oct, 14:00–15:00 (local)". */
+/** Tooltip heading: "Wed 7 Oct 2026 (UTC)" or "Wed 7 Oct, 14:00–15:00 (local)" ("2:00 PM" when 12-hour time is on). */
 export function bucketTitle(key: string, unit: BucketUnit, offsetMin?: number, locale?: string): string {
   const ms = parseKey(key);
   if (ms == null) return key;
@@ -187,7 +188,7 @@ export function bucketTitle(key: string, unit: BucketUnit, offsetMin?: number, l
   const off = tzOffset(ms, offsetMin);
   const d = new Date(ms + off * 60_000);
   // Hour buckets are UTC hours, so a half-hour zone (India, Nepal...) starts them at :30 or :45.
-  const clock = (t: Date) => `${String(t.getUTCHours()).padStart(2, "0")}:${String(t.getUTCMinutes()).padStart(2, "0")}`;
+  const clock = (t: Date) => formatHourMinute(t.getUTCHours(), t.getUTCMinutes(), locale);
   return `${date(d, false)}, ${clock(d)}–${clock(new Date(d.getTime() + 3_600_000))}${zone("local")}`;
 }
 

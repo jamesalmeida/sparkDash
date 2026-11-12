@@ -7,6 +7,11 @@ Format: version sections are listed newest first.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **12-hour time.** **Settings → 12-hour time** (`hour12`, off by default) shows clock times as 9:04 PM instead of 21:04. The activity log, event details, chart axes, benchmarks and the other clocks follow one formatter that reads the setting. Off leaves the existing 24-hour formatting unchanged.
+
 ## [2.90.0] — 2026-11-12
 
 ### Added

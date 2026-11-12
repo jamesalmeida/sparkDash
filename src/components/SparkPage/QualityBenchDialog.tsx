@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { formatDateTime } from "../../shared/timeFormat";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import "../../styles/dialogs.css";
@@ -168,7 +169,7 @@ function pct(v: number | null | undefined): string {
 }
 
 function runLabel(job: QualityBenchJob): string {
-  const when = new Date(job.startedAt).toLocaleString(undefined, {
+  const when = formatDateTime(job.startedAt, {
     month: "short",
     day: "numeric",
     hour: "2-digit",
@@ -2082,7 +2083,7 @@ export function QualityBenchDialog({
                   {statusLabel(job.status)}
                 </span>
                 <span className="bench-status-meta">
-                  {new Date(job.startedAt).toLocaleString()} · {formatDuration(job.durationMs)}
+                  {formatDateTime(job.startedAt)} · {formatDuration(job.durationMs)}
                 </span>
               </div>
 

@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { formatDateTime } from "../../shared/timeFormat";
 import { activeTimeZone } from "../../shared/timeZone";
 import { formatTokensCompact } from "../../shared/tokenFormat";
 import { fmtPct, formatAgo, sortRows, type EndpointRow, type ModelRow, type SortDir } from "./tokenStats";
@@ -181,7 +182,7 @@ export function ModelTable({ rows, sparkName, nowMs }: { rows: readonly ModelRow
           case "sparks":
             return <NameList names={r.sparkIds.map(sparkName)} />;
           default:
-            return r.lastSeen ? <span title={new Date(r.lastSeen).toLocaleString(undefined, { timeZone: activeTimeZone() })}>{formatAgo(r.lastSeen, nowMs)}</span> : <span className="tk-faint">{"—"}</span>;
+            return r.lastSeen ? <span title={formatDateTime(r.lastSeen, { timeZone: activeTimeZone() })}>{formatAgo(r.lastSeen, nowMs)}</span> : <span className="tk-faint">{"—"}</span>;
         }
       }}
     />

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import "../../../styles/benchpages.css";
+import { formatDateTime } from "../../../shared/timeFormat";
 import type { HistoryRow } from "./historyRows";
 import { useTranslation } from "react-i18next";
 
@@ -67,7 +68,7 @@ const STATUS_TONE: Record<HistoryRow["status"], string> = {
 };
 
 function formatWhen(ts: number): string {
-  return new Date(ts).toLocaleString(undefined, {
+  return formatDateTime(ts, {
     month: "short",
     day: "numeric",
     hour: "2-digit",

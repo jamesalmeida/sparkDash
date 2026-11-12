@@ -487,6 +487,13 @@ export function SettingsDialog({ open, onClose, onSaved, onOpenHarness, serverVe
                 </small>
               </SettingRow>
 
+              <ToggleRow
+                title={t("timeFormat.title")}
+                help={t("timeFormat.help")}
+                checked={settings.hour12 === true}
+                onChange={(v) => update({ hour12: v })}
+              />
+
               <SettingRow
                 title={t("defaultLlmPort.title")}
                 help={t("defaultLlmPort.help")}

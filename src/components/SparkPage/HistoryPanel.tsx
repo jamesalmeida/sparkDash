@@ -11,6 +11,7 @@ import type {
   MetricsHistoryResponse,
 } from "../../api/types";
 import { formatBytesPerSec, formatMb } from "../../shared/formatBytes";
+import { formatDateTime, useHour12 } from "../../shared/timeFormat";
 import { configuredTimeZone } from "../../shared/timeZone";
 import { HEADROOM_THRESHOLDS_MB, memoryModelFor } from "../../shared/vramBreakdown";
 import { Panel } from "../ui/Panel";
@@ -66,13 +67,13 @@ const watts = (v: number) => `${v < 10 ? v.toFixed(1) : Math.round(v)} W`;
 const tokS = (v: number) =>
   v >= 1000 ? `${(v / 1000).toFixed(v >= 10_000 ? 0 : 1)}k` : v >= 100 ? v.toFixed(0) : v.toFixed(1);
 
-/** Tooltip and axis labels, in Settings → Time zone like the other charts. */
+/** Tooltip and axis labels, in Settings → Time zone and 12-hour time like the other charts. */
 function timeFormatters(range: MetricsHistoryRange) {
   const timeZone = configuredTimeZone() ?? undefined;
   const long = range === "7d" || range === "30d";
-  const time = new Intl.DateTimeFormat(undefined, { timeZone, hour: "2-digit", minute: "2-digit" });
-  const day = new Intl.DateTimeFormat(undefined, { timeZone, month: "short", day: "numeric" });
-  const dayTime = new Intl.DateTimeFormat(undefined, {
+  const time = (t: number) => formatDateTime(t, { timeZone, hour: "2-digit", minute: "2-digit" });
+  const day = (t: number) => formatDateTime(t, { timeZone, month: "short", day: "numeric" });
+  const dayTime = (t: number) => formatDateTime(t, {
     timeZone,
     month: "short",
     day: "numeric",
@@ -80,10 +81,10 @@ function timeFormatters(range: MetricsHistoryRange) {
     minute: "2-digit",
   });
   return {
-    tooltip: (t: number) => (range === "1h" || range === "6h" ? time.format(t) : dayTime.format(t)),
-    axis: (t: number) => (long ? day.format(t) : time.format(t)),
+    tooltip: (t: number) => (range === "1h" || range === "6h" ? time(t) : dayTime(t)),
+    axis: (t: number) => (long ? day(t) : time(t)),
     /** When the data on screen was fetched. */
-    stamp: (t: number) => time.format(t),
+    stamp: (t: number) => time(t),
   };
 }
 
@@ -485,6 +486,7 @@ export function HistoryPanel({
   temperatureUnit: "celsius" | "fahrenheit";
 }) {
   const { t } = useTranslation("hardware");
+  const hour12 = useHour12();
   const [range, setRange] = useState<MetricsHistoryRange>(readHistoryRange);
   /** Shared crosshair: one timestamp for every chart. */
   const [cursorT, setCursorT] = useState<number | null>(null);
@@ -498,7 +500,7 @@ export function HistoryPanel({
     () => (enabled ? buildCharts(enabled, timeline, kind, platform, temperatureUnit, t) : []),
     [enabled, timeline, kind, platform, temperatureUnit, t],
   );
-  const formats = useMemo(() => timeFormatters(range), [range]);
+  const formats = useMemo(() => timeFormatters(range), [range, hour12]);
 
   const pick = (next: MetricsHistoryRange) => {
     if (next === range) return;

@@ -5,6 +5,7 @@ import { fetchLlmTokenTotals } from "../../api/llmTokenClient";
 import { fetchModelPrices } from "../../api/costClient";
 import type { ModelPrice } from "../../api/costTypes";
 import type { TokenHistory, TokenHistoryRow } from "../../api/types";
+import { formatDateTime } from "../../shared/timeFormat";
 import { formatTokensCompact } from "../../shared/tokenFormat";
 import { StackedBarChart, type BarBucket, type BarSeries } from "../ui/StackedBarChart";
 import {
@@ -265,7 +266,7 @@ export function CostPage() {
                 >
                   {t("cost.catalogLink")}
                 </a>
-                {t("cost.catalogSuffix", { fetched: prices?.at ? t("cost.catalogFetched", { date: new Date(prices.at).toLocaleString() }) : "", stale: prices?.stale ? t("cost.catalogStale") : "" })}
+                {t("cost.catalogSuffix", { fetched: prices?.at ? t("cost.catalogFetched", { date: formatDateTime(prices.at) }) : "", stale: prices?.stale ? t("cost.catalogStale") : "" })}
               </li>
               <li>{t("cost.tokenCounters")}</li>
             </ul>

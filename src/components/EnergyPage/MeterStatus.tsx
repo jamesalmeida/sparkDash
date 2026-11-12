@@ -1,9 +1,10 @@
 import type { PowerMeterMeterStatus, PowerMeterStatus } from "../../api/powerMeters";
+import { formatDateTime } from "../../shared/timeFormat";
 import { activeTimeZone } from "../../shared/timeZone";
 import { Tag, type TagTone } from "../ui/Tag";
 
 function clock(ms: number): string {
-  return new Date(ms).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: activeTimeZone() });
+  return formatDateTime(ms, { hour: "2-digit", minute: "2-digit", timeZone: activeTimeZone() });
 }
 
 function problem(m: PowerMeterMeterStatus): string | null {

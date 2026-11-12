@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { getQualityBench, listQualityBenchFleet } from "../../../api/client";
 import type { QualityBenchJob, QualityReference } from "../../../api/types";
 import { qualityFamilyKey } from "../../../shared/qualityBench.js";
+import { formatDateTime } from "../../../shared/timeFormat";
 import { BenchCopyButton } from "../../SparkPage/BenchCopyButton";
 import { buildQualityShareCard } from "../../SparkPage/benchShareCard";
 import { QualityRunComparison, qualityComparisonText } from "../../SparkPage/QualityBenchDialog";
@@ -44,7 +45,7 @@ const parseKey = (k: string): Pick | null => {
 };
 
 function runOptionLabel(job: QualityBenchJob): string {
-  const when = new Date(job.startedAt).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  const when = formatDateTime(job.startedAt, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
   const parts = [job.unit?.name || job.sparkId, when];
   if (job.config.label) parts.push(job.config.label);
   parts.push(job.config.modelId || "unknown model");

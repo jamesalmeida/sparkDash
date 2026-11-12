@@ -12,6 +12,7 @@ import { formatDiskSize } from "../../shared/formatBytes";
 import { headroomTextClass } from "../../shared/vramBreakdown";
 import { makeHeadResolver } from "../../shared/sparkHead";
 import { formatTokensCompact } from "../../shared/tokenFormat";
+import { formatDateTime, publishHour12, useHour12 } from "../../shared/timeFormat";
 import { activeTimeZone, setConfiguredTimeZone } from "../../shared/timeZone";
 import { vramContextFor, type VramBreakdownContext } from "../../shared/vramBreakdown";
 import { computeFleetTotals } from "../OverviewPage/fleetStats";
@@ -326,6 +327,7 @@ export function KioskPage() {
   const now = useClock();
   const cursorActive = useCursorActive();
   useWakeLock();
+  useHour12();
 
   useEffect(() => {
     if (options.theme) document.documentElement.setAttribute("data-theme", options.theme);
@@ -352,6 +354,7 @@ export function KioskPage() {
         .then((s) => {
           if (cancelled) return;
           setConfiguredTimeZone(s.timeZone);
+          publishHour12(s.hour12);
           setSettings(s);
         })
         .catch(() => {
@@ -424,7 +427,7 @@ export function KioskPage() {
   const staleAfterMs = Math.max(10_000, 3 * (refreshInterval ?? 2_000));
   const stale = lastValidSnapshotAt != null && now.getTime() - lastValidSnapshotAt > staleAfterMs;
   const tz = activeTimeZone();
-  const clock = now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: tz });
+  const clock = formatDateTime(now, { hour: "numeric", minute: "2-digit", timeZone: tz });
   const date = now.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric", timeZone: tz });
 
   return (
@@ -455,7 +458,7 @@ export function KioskPage() {
           {!connected || stale ? (
             <div className="kiosk-clock__stale">
               {lastValidSnapshotAt
-                ? t("kiosk.stale", { time: new Date(lastValidSnapshotAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", timeZone: tz }) })
+                ? t("kiosk.stale", { time: formatDateTime(lastValidSnapshotAt, { hour: "numeric", minute: "2-digit", timeZone: tz }) })
                 : t("kiosk.connecting")}
             </div>
           ) : null}

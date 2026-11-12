@@ -5,6 +5,7 @@ import { ClearMenu, type ClearChoice } from "../ui/ClearMenu";
 import { fetchLlmTokenTotals } from "../../api/llmTokenClient";
 import type { LlmTokenSeriesTotals } from "../../api/llmTokenTypes";
 import type { SparkSnapshot, TokenHistory } from "../../api/types";
+import { useHour12 } from "../../shared/timeFormat";
 import { formatTokensCompact } from "../../shared/tokenFormat";
 import { StackedBarChart, type BarBucket, type BarSeries } from "../ui/StackedBarChart";
 import { EndpointTable, ModelTable } from "./TokenTables";
@@ -60,6 +61,7 @@ interface LoadError {
 
 export function TokensPage({ sparks, onSelectSpark }: { sparks: SparkSnapshot[]; onSelectSpark?: (id: string) => void }) {
   const { t, i18n } = useTranslation("statistics");
+  const hour12 = useHour12();
   const [range, setRange] = useState<RangeKey>("7d");
   const [groupBy, setGroupBy] = useState<GroupBy>("type");
   const [data, setData] = useState<Loaded | null>(null);
@@ -153,7 +155,7 @@ export function TokensPage({ sparks, onSelectSpark }: { sparks: SparkSnapshot[];
             labels: tokenInsightLabels(t, view.w.spec, view.summary),
           })
         : [],
-    [view, sparkName, t, i18n.language]
+    [view, sparkName, t, i18n.language, hour12]
   );
 
   const copyCsv = async () => {

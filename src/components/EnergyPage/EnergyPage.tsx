@@ -1,4 +1,5 @@
 import { RestartButton } from "../ui/RestartButton";
+import { formatDateTime, useHour12 } from "../../shared/timeFormat";
 import { activeTimeZone } from "../../shared/timeZone";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -148,6 +149,7 @@ export function EnergyPage({
   useVisiblePoll(loadHistory, HISTORY_POLL_MS);
   useVisiblePoll(loadLive, LIVE_POLL_MS);
 
+  const hour12 = useHour12();
   const price = settings?.energyPricePerKwh ?? null;
   const currency = settings?.energyCurrency || "$";
   const names = useMemo(() => new Map(sparks.map((s) => [s.id, s.name])), [sparks]);
@@ -178,7 +180,7 @@ export function EnergyPage({
     const delta = previousPeriodDelta(rows, win, summary.kwh);
     const insights = buildInsights({ summary, buckets, rows: inRange, mode, tz, price, currency, nodeName: nameOf, t });
     return { rows, inRange, win, summary, mode, buckets, powerBuckets, delta, insights, nodeIds, wall };
-  }, [history, range, price, currency, nameOf, tz, t]);
+  }, [history, range, price, currency, nameOf, tz, t, hour12]);
 
   const colorOf = useMemo(() => {
     const map = new Map<string, string>();
@@ -258,7 +260,7 @@ export function EnergyPage({
             {metered ? t("energy.subtitleMetered", { meter: meterLabel }) : t("energy.subtitle")}
             {history ? (
               <span className="mono en-updated">
-                {" "}{t("energy.updated", { time: new Date(history.generatedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: activeTimeZone() }) })}
+                {" "}{t("energy.updated", { time: formatDateTime(history.generatedAt, { hour: "2-digit", minute: "2-digit", timeZone: activeTimeZone() }) })}
                 <MeterChips status={meterStatus} nameOf={nameOf} />
               </span>
             ) : null}

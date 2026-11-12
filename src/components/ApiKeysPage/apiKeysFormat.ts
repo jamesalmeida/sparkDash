@@ -1,4 +1,5 @@
 /** Formatting for the API Keys page. A missing value is "unknown", never a fabricated 0. */
+import { formatClock, isHour12 } from "../../shared/timeFormat";
 export const UNKNOWN = "unknown";
 export interface ApiKeysFormatLabels {
   unknown?: string;
@@ -22,7 +23,10 @@ export function fmtLimit(v: number | null): string {
 export function fmtDate(v: string | null, labels: ApiKeysFormatLabels = {}): string {
   if (!v) return "—";
   const t = Date.parse(v);
-  return Number.isFinite(t) ? new Date(t).toISOString().slice(0, 16).replace("T", " ") : labels.unknown ?? UNKNOWN;
+  if (!Number.isFinite(t)) return labels.unknown ?? UNKNOWN;
+  const iso = new Date(t).toISOString();
+  if (!isHour12()) return iso.slice(0, 16).replace("T", " ");
+  return `${iso.slice(0, 10)} ${formatClock(t, { timeZone: "UTC" })}`;
 }
 
 /** Short, non-secret handle for a hashed key id. */

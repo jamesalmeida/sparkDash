@@ -1,4 +1,5 @@
 import type { EnergyHistoryRow } from "../../api/types";
+import { formatHourMinute } from "../../shared/timeFormat";
 import { tzOffsetMinutes } from "../../shared/timeZone";
 
 /**
@@ -67,10 +68,10 @@ export function floorHour(ms: number): number {
   return Math.floor(ms / HOUR_MS) * HOUR_MS;
 }
 
-/** "Tue 14:00" */
+/** "Tue 14:00", or "Tue 2:00 PM" when 12-hour time is on. */
 export function formatLocalHour(ms: number, tz: TzOffsetFn): string {
   const d = wall(ms, tz);
-  return `${WEEKDAYS[d.getUTCDay()]} ${pad(d.getUTCHours())}:00`;
+  return `${WEEKDAYS[d.getUTCDay()]} ${formatHourMinute(d.getUTCHours(), 0)}`;
 }
 
 /** "Tue 7 Oct" */
@@ -179,7 +180,7 @@ export function buildBuckets(
       b = {
         key,
         startMs: t,
-        label: mode === "hour" ? `${pad(localHour(t, tz))}:00` : formatShortDay(t, tz),
+        label: mode === "hour" ? formatHourMinute(localHour(t, tz), 0) : formatShortDay(t, tz),
         title: mode === "hour" ? formatLocalHour(t, tz) : formatLocalDay(t, tz),
         nodeKwh: {},
         kwh: 0,
